@@ -19,7 +19,14 @@ const App = () => {
     }
   }, [jobs]);
 
-  const addJob = (job) => setJobs([...jobs, job]);
+  const addJob = (job) => {
+    const newJob = { ...job, id: Date.now() };
+    setJobs([...jobs, newJob]);
+  };
+
+  const deleteJob = (jobId) => {
+    setJobs(jobs.filter(job => job.id !== jobId));
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4">
@@ -27,7 +34,7 @@ const App = () => {
       <div className="py-1"></div>
       <div className="w-full max-w-md bg-gray-800 p-6 rounded-lg shadow-lg">
         <JobForm addJob={addJob} />
-        <JobList jobs={jobs} />
+        <JobList jobs={jobs} deleteJob={deleteJob} />
       </div>
     </div>
   );
