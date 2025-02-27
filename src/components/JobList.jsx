@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+import { motion } from "framer-motion";
 import { TiDelete } from "react-icons/ti";
 import HoverButton from "./HoverButton";
 
@@ -16,7 +17,14 @@ const JobList = ({ jobs, deleteJob, startEditing, filter, sortOrder }) => {
         <p className="text-gray-400 text-center">No jobs found.</p>
       ) : (
         sortedJobs.map((job) => (
-          <div key={job.id} className="p-4 bg-gray-700 rounded-md shadow flex justify-between items-center">
+          <motion.div
+            key={job.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="p-4 bg-gray-700 rounded-md shadow flex justify-between items-center"
+          >
             <span className="font-medium text-white">
               {job.company} - {job.role}
             </span>
@@ -32,7 +40,7 @@ const JobList = ({ jobs, deleteJob, startEditing, filter, sortOrder }) => {
                   : job.status === "Offer"
                   ? "bg-green-500"
                   : "bg-red-500"
-              } text-white hover:bg-gray-600`}
+              } text-white hover:bg-gray-500`}
                 action={() => startEditing(job)}
               />
               <button
@@ -42,7 +50,7 @@ const JobList = ({ jobs, deleteJob, startEditing, filter, sortOrder }) => {
                   <TiDelete className=""/>
               </button>
             </span>
-          </div>
+          </motion.div>
         ))
       )}
     </div>

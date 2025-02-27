@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 const EditJobForm = ({ job, saveEdit, cancelEdit }) => {
   const [updatedJob, setUpdatedJob] = useState({ ...job });
@@ -9,7 +10,14 @@ const EditJobForm = ({ job, saveEdit, cancelEdit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-gray-800 rounded-lg shadow-lg">
+    <motion.form
+      onSubmit={handleSubmit}
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+      className="p-4 bg-gray-800 rounded-lg shadow-lg"
+    >
       <input
         type="text"
         placeholder="Company"
@@ -40,7 +48,7 @@ const EditJobForm = ({ job, saveEdit, cancelEdit }) => {
         <button type="submit" className="bg-blue-500 text-white p-2 w-full">Save</button>
         <button type="button" className="bg-gray-500 text-white p-2 w-full" onClick={cancelEdit}>Cancel</button>
       </div>
-    </form>
+    </motion.form>
   );
 };
 
