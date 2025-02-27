@@ -1,4 +1,9 @@
-const JobList = ({ jobs, deleteJob, filter, sortOrder }) => {
+import React, { useState } from "react";
+import { TiDelete } from "react-icons/ti";
+import HoverButton from "./HoverButton";
+
+const JobList = ({ jobs, deleteJob, startEditing, filter, sortOrder }) => {
+
   const filteredJobs = filter === "All" ? jobs : jobs.filter(job => job.status === filter);
 
   const sortedJobs = [...filteredJobs].sort((a, b) => 
@@ -16,7 +21,10 @@ const JobList = ({ jobs, deleteJob, filter, sortOrder }) => {
               {job.company} - {job.role}
             </span>
             <span className="flex gap-2 items-center">
-              <span className={`px-3 py-1 text-sm font-bold ${
+              <HoverButton
+                message={job.status}
+                hoverMessage="Edit"
+                classes={`w-22 h-7 flex items-center justify-center text-sm font-bold ${
                 job.status === "Applied"
                   ? "bg-blue-500"
                   : job.status === "Interview"
@@ -24,14 +32,14 @@ const JobList = ({ jobs, deleteJob, filter, sortOrder }) => {
                   : job.status === "Offer"
                   ? "bg-green-500"
                   : "bg-red-500"
-              } text-white`}>
-                {job.status}
-              </span>
+              } text-white hover:bg-gray-600`}
+                action={() => startEditing(job)}
+              />
               <button
-                className="px-2 py-1 text-sm font-bold bg-gray-500 text-white hover:bg-gray-400 rounded"
+                className="text-3xl font-bold text-gray-600 hover:text-gray-400 rounded"
                 onClick={() => deleteJob(job.id)}
               >
-                X
+                  <TiDelete className=""/>
               </button>
             </span>
           </div>
