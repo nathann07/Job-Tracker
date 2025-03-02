@@ -10,13 +10,13 @@ const StatsPanel = ({ jobs, isOpen, togglePanel }) => {
 
   return (
     <motion.div
-      initial={{ x: "100%" }}
-      animate={{ x: isOpen ? 0 : "100%" }}
+      initial={{ x: "120%" }}
+      animate={{ x: isOpen ? 0 : "120%" }}
       transition={{ duration: 0.3 }}
-      className="fixed top-0 right-0 h-full w-64 bg-gray-300 dark:bg-gray-800 dark:text-white shadow-lg p-6 z-50"
+      className="outline-8 outline-gray-300 dark:outline-gray-800 fixed top-5 right-5 w-64 bg-gray-100 dark:bg-gray-700 dark:text-white shadow-xl p-6 z-50 rounded backdrop-blur-md"
     >
       <button
-        className="absolute top-3 right-3 text-4xl text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400 rounded"
+        className="absolute top-3 right-3 text-4xl text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400 rounded"
         onClick={togglePanel}
       >
         <TiDelete/>

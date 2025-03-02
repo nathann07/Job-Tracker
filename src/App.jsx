@@ -32,7 +32,7 @@ const App = () => {
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
-    localStorage.setItem("darkMode", darkMode);
+    localStorage.setItem("darkMode", darkMode ? "true" : "false");
   }, [darkMode]);
   
 

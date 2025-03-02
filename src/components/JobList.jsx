@@ -14,7 +14,7 @@ const JobList = ({ jobs, deleteJob, startEditing, filter, sortOrder }) => {
   return (
     <div className="mt-4 space-y-3">
       {sortedJobs.length === 0 ? (
-        <p className="text-gray-500 darK:text-gray-400 text-center">No jobs found.</p>
+        <p className="text-gray-500 dark:text-gray-400 text-center">No jobs found.</p>
       ) : (
         sortedJobs.map((job) => (
           <motion.div
