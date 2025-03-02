@@ -5,6 +5,7 @@ import JobList from "./components/JobList";
 import FilterBar from "./components/FilterBar";
 import EditJobForm from "./components/EditJobForm";
 import HoverButton from "./components/HoverButton";
+import StatsPanel from "./components/StatsPanel";
 
 const App = () => {
   const [jobs, setJobs] = useState([]);
@@ -14,6 +15,9 @@ const App = () => {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("darkMode") === "true";
   });
+  const [statsOpen, setStatsOpen] = useState(false);
+
+  const toggleStatsPanel = () => setStatsOpen(!statsOpen);
 
   useEffect(() => {
     const savedJobs = JSON.parse(localStorage.getItem("jobs")) || [];
@@ -62,12 +66,20 @@ const App = () => {
   return (
     <div className="min-h-screen flex flex-col items-center p-4 bg-gray-100 text-black dark:bg-gray-900 dark:text-white">
       <Header />
-      <HoverButton
-      message={darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-      hoverMessage={darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-      classes={`bg-gray-300 dark:bg-gray-800 dark:text-white px-4 py-2 rounded my-4 shadow-lg`}
-      action={() => setDarkMode(!darkMode)}>
-      </HoverButton>
+      <span className="flex space-x-4">
+        <HoverButton
+        message={darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
+        hoverMessage={darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
+        classes={`bg-gray-300 dark:bg-gray-800 dark:text-white px-4 py-2 rounded my-4 shadow-lg`}
+        action={() => setDarkMode(!darkMode)}>
+        </HoverButton>
+        <HoverButton
+        message={"📊 View Stats"}
+        hoverMessage={"📊 View Stats"}
+        classes={`bg-gray-300 dark:bg-gray-800 dark:text-white px-4 py-2 rounded my-4 shadow-lg`}
+        action={toggleStatsPanel}>
+        </HoverButton>
+      </span>
       <div className="py-1"></div>
       <div className="w-full max-w-md bg-gray-300 dark:bg-gray-800 p-6 rounded-lg shadow-lg">
         {editingJob ? (
@@ -80,6 +92,7 @@ const App = () => {
             </>
           )}
       </div>
+      <StatsPanel jobs={jobs} isOpen={statsOpen} togglePanel={toggleStatsPanel} />
     </div>
   );
 };

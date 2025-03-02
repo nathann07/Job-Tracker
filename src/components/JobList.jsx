@@ -44,10 +44,10 @@ const JobList = ({ jobs, deleteJob, startEditing, filter, sortOrder }) => {
                 action={() => startEditing(job)}
               />
               <button
-                className="text-3xl font-bold text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400 rounded"
+                className="text-3xl text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400 rounded"
                 onClick={() => deleteJob(job.id)}
               >
-                  <TiDelete className=""/>
+                  <TiDelete/>
               </button>
             </span>
           </motion.div>
