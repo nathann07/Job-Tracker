@@ -14,7 +14,7 @@ const JobList = ({ jobs, deleteJob, startEditing, filter, sortOrder }) => {
   return (
     <div className="mt-4 space-y-3">
       {sortedJobs.length === 0 ? (
-        <p className="text-gray-400 text-center">No jobs found.</p>
+        <p className="text-gray-500 darK:text-gray-400 text-center">No jobs found.</p>
       ) : (
         sortedJobs.map((job) => (
           <motion.div
@@ -23,9 +23,9 @@ const JobList = ({ jobs, deleteJob, startEditing, filter, sortOrder }) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className="p-4 bg-gray-700 rounded-md shadow flex justify-between items-center"
+            className="p-4 bg-gray-100 dark:bg-gray-700 rounded-md shadow flex justify-between items-center"
           >
-            <span className="font-medium text-white">
+            <span className="font-medium dark:text-white">
               {job.company} - {job.role}
             </span>
             <span className="flex gap-2 items-center">
@@ -40,11 +40,11 @@ const JobList = ({ jobs, deleteJob, startEditing, filter, sortOrder }) => {
                   : job.status === "Offer"
                   ? "bg-green-500"
                   : "bg-red-500"
-              } text-white hover:bg-gray-500`}
+              } text-white hover:bg-gray-400 dark:hover:bg-gray-500`}
                 action={() => startEditing(job)}
               />
               <button
-                className="text-3xl font-bold text-gray-600 hover:text-gray-400 rounded"
+                className="text-3xl font-bold text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400 rounded"
                 onClick={() => deleteJob(job.id)}
               >
                   <TiDelete className=""/>

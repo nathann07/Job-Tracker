@@ -4,7 +4,7 @@ const FilterBar = ({ filter, setFilter, sortOrder, setSortOrder }) => {
       <select
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
-        className="p-2 border rounded bg-gray-800 text-white"
+        className="p-2 border rounded bg-white dark:bg-gray-800 dark:text-white"
       >
         <option value="All">All</option>
         <option value="Applied">Applied</option>
@@ -16,7 +16,7 @@ const FilterBar = ({ filter, setFilter, sortOrder, setSortOrder }) => {
       <select
         value={sortOrder}
         onChange={(e) => setSortOrder(e.target.value)}
-        className="p-2 border rounded bg-gray-800 text-white"
+        className="p-2 border rounded bg-white dark:bg-gray-800 dark:text-white"
       >
         <option value="newest">Newest First</option>
         <option value="oldest">Oldest First</option>

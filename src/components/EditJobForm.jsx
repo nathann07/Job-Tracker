@@ -16,12 +16,12 @@ const EditJobForm = ({ job, saveEdit, cancelEdit }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.3 }}
-      className="p-4 bg-gray-800 rounded-lg shadow-lg"
+      className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg shadow-lg"
     >
       <input
         type="text"
         placeholder="Company"
-        className="border p-2 w-full mb-2 bg-gray-700 text-white"
+        className="border p-2 w-full mb-2 bg-white dark:bg-gray-700 dark:text-white"
         value={updatedJob.company}
         onChange={(e) => setUpdatedJob({ ...updatedJob, company: e.target.value })}
         required
@@ -29,13 +29,13 @@ const EditJobForm = ({ job, saveEdit, cancelEdit }) => {
       <input
         type="text"
         placeholder="Role"
-        className="border p-2 w-full mb-2 bg-gray-700 text-white"
+        className="border p-2 w-full mb-2 bg-white dark:bg-gray-700 dark:text-white"
         value={updatedJob.role}
         onChange={(e) => setUpdatedJob({ ...updatedJob, role: e.target.value })}
         required
       />
       <select
-        className="border p-2 w-full mb-2 bg-gray-700 text-white"
+        className="border p-2 w-full mb-2 bg-white dark:bg-gray-700 dark:text-white"
         value={updatedJob.status}
         onChange={(e) => setUpdatedJob({ ...updatedJob, status: e.target.value })}
       >
