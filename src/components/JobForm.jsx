@@ -1,13 +1,20 @@
 import { useState } from "react";
 
 const JobForm = ({ addJob }) => {
-  const [job, setJob] = useState({ company: "", role: "", status: "Applied" });
+  const [job, setJob] = useState({
+    company: "",
+    role: "",
+    status: "Applied",
+    description: "",
+    postingLink: "",
+    screenshotUrl: "",
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     addJob(job);
-    setJob({ company: "", role: "", status: "Applied" });
-  }
+    setJob({ company: "", role: "", status: "Applied", description: "", postingLink: "", screenshotUrl: "" });
+  };
 
   return (
     <div className="w-full max-w-md">
@@ -38,6 +45,33 @@ const JobForm = ({ addJob }) => {
           <option>Offer</option>
           <option>Rejected</option>
         </select>
+
+        {/* Job Description */}
+        <textarea
+          placeholder="Job Description (Optional)"
+          className="border p-3 w-full mb-3 text-lg bg-white dark:bg-gray-600 dark:text-white"
+          value={job.description}
+          onChange={(e) => setJob({ ...job, description: e.target.value })}
+        ></textarea>
+
+        {/* Job Posting Link */}
+        <input
+          type="url"
+          placeholder="Job Posting URL (Optional)"
+          className="border p-3 w-full mb-3 text-lg bg-white dark:bg-gray-600 dark:text-white"
+          value={job.postingLink}
+          onChange={(e) => setJob({ ...job, postingLink: e.target.value })}
+        />
+
+        {/* Screenshot URL */}
+        <input
+          type="url"
+          placeholder="Job Posting Screenshot URL (Optional)"
+          className="border p-3 w-full mb-3 text-lg bg-white dark:bg-gray-600 dark:text-white"
+          value={job.screenshotUrl}
+          onChange={(e) => setJob({ ...job, screenshotUrl: e.target.value })}
+        />
+
         <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded w-full text-lg">
           Add Job
         </button>
