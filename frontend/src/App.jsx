@@ -17,10 +17,10 @@ const App = () => {
 
   const toggleStatsPanel = () => setStatsOpen(!statsOpen);
 
-  const host = "http://localhost:5000";
+  const API_BASE_URL = "https://job-tracker-8naf.onrender.com";
 
   useEffect(() => {
-    fetch(`${host}/jobs`)
+    fetch(`${API_BASE_URL}/jobs`)
         .then((res) => res.json())
         .then((data) => setJobs(data))
         .catch((err) => console.error("Error fetching jobs:", err));
@@ -32,7 +32,7 @@ const App = () => {
   }, [darkMode]);
 
   const addJob = async (job) => {
-    const response = await fetch(`${host}/jobs`, {
+    const response = await fetch(`${API_BASE_URL}/jobs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(job),
@@ -42,7 +42,7 @@ const App = () => {
 };
 
 const deleteJob = async (jobId) => {
-  await fetch(`${host}/jobs/${jobId}`, { method: "DELETE" });
+  await fetch(`${API_BASE_URL}/jobs/${jobId}`, { method: "DELETE" });
   setJobs(jobs.filter(job => job.id !== jobId));
 };
 
@@ -55,7 +55,7 @@ const deleteJob = async (jobId) => {
   };
 
   const saveEdit = async (updatedJob) => {
-    const response = await fetch(`${host}/jobs/${updatedJob.id}`, {
+    const response = await fetch(`${API_BASE_URL}/jobs/${updatedJob.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedJob),
