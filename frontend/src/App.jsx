@@ -54,16 +54,21 @@ const deleteJob = async (jobId) => {
     setSelectedJob(null);
   };
 
-  const saveEdit = async (updatedJob) => {
+const saveEdit = async (updatedJob) => {
     const response = await fetch(`${API_BASE_URL}/jobs/${updatedJob.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedJob),
     });
     const editedJob = await response.json();
+
     setJobs(jobs.map(job => job.id === editedJob.id ? editedJob : job));
-    setEditingJob(null);
+
+    if (selectedJob && selectedJob.id === editedJob.id) {
+        setSelectedJob(editedJob);
+    }
 };
+
 
 
   return (

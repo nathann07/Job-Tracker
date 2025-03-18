@@ -10,32 +10,32 @@ app.use(cors());
 
 const dbFilePath = "db.json";
 
-// ✅ Ensure `db.json` exists before initializing LowDB
+// ensure `db.json` exists before initializing LowDB
 if (!fs.existsSync(dbFilePath)) {
     console.log("db.json not found! Creating default file...");
     fs.writeFileSync(dbFilePath, JSON.stringify({ jobs: [] }, null, 2));
 }
 
-// ✅ Initialize LowDB with a default structure
+// initialize LowDB with a default structure
 const adapter = new JSONFileSync(dbFilePath);
 const db = new LowSync(adapter, { jobs: [] });
 
 db.read();
 
-// ✅ Ensure `db.data` is always initialized
+// ensure `db.data` is always initialized
 if (!db.data || !db.data.jobs) {
     console.log("No data found in db.json! Initializing...");
     db.data = { jobs: [] };
     db.write();
 }
 
-// Fetch all jobs
+// fetch all jobs
 app.get("/jobs", (req, res) => {
     db.read();
     res.json(db.data.jobs);
 });
 
-// Add a job
+// add a job
 app.post("/jobs", (req, res) => {
     const newJob = { id: Date.now(), ...req.body };
     db.data.jobs.push(newJob);
@@ -43,7 +43,7 @@ app.post("/jobs", (req, res) => {
     res.json(newJob);
 });
 
-// Edit a job
+// edit a job
 app.put("/jobs/:id", (req, res) => {
     db.read();
     const job = db.data.jobs.find(j => j.id == req.params.id);
@@ -54,7 +54,7 @@ app.put("/jobs/:id", (req, res) => {
     res.json(job);
 });
 
-// Delete a job
+// delete a job
 app.delete("/jobs/:id", (req, res) => {
     db.read();
     db.data.jobs = db.data.jobs.filter(j => j.id != req.params.id);
@@ -62,6 +62,6 @@ app.delete("/jobs/:id", (req, res) => {
     res.json({ success: true });
 });
 
-// Start server
+// start server
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
