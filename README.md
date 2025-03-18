@@ -19,7 +19,7 @@ Check out the live application: https://myjobtracker.netlify.app/
 * Tailwind CSS
 * Framer Motion
 * Vite
-* Local Storage for Data Persistence
+* Express Backend for Data Persistence
 
 ## Installation and Setup
 
@@ -56,9 +56,11 @@ http://localhost:5173
 * Edit a Job: Click the "Edit" button next to a job entry, update the details, and save.
 * Delete a Job: Click the "Delete" icon next to a job entry to remove it.
 * View Statistics: Click the "📊 View Stats" button to open the statistics panel.
+* Currently, **JOBS ARE SHARED WITH EVERYONE**. Separate user accounts are the next planned feature.
 
 ## Acknowledgments
 
 * [React Icons](https://react-icons.github.io/react-icons/) for the icons used in the project.
 * [Vite](https://vitejs.dev/) for the build tool.
 * [Netlify](https://www.netlify.com/) for hosting the live application.
+* [Render](https://render.com/) for hosting the Express backend.

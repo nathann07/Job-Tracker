@@ -17,30 +17,34 @@ const App = () => {
 
   const toggleStatsPanel = () => setStatsOpen(!statsOpen);
 
-  useEffect(() => {
-    const savedJobs = JSON.parse(localStorage.getItem("jobs")) || [];
-    if (savedJobs.length > 0) {
-      setJobs(savedJobs);
-    }
-  }, []);
+  const host = "http://localhost:5000";
 
   useEffect(() => {
-    localStorage.setItem("jobs", JSON.stringify(jobs));
-  }, [jobs]);
+    fetch(`${host}/jobs`)
+        .then((res) => res.json())
+        .then((data) => setJobs(data))
+        .catch((err) => console.error("Error fetching jobs:", err));
+}, []);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
     localStorage.setItem("darkMode", darkMode ? "true" : "false");
   }, [darkMode]);
 
-  const addJob = (job) => {
-    const newJob = { ...job, id: Date.now() };
+  const addJob = async (job) => {
+    const response = await fetch(`${host}/jobs`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(job),
+    });
+    const newJob = await response.json();
     setJobs([...jobs, newJob]);
-  };
+};
 
-  const deleteJob = (jobId) => {
-    setJobs(jobs.filter(job => job.id !== jobId));
-  };
+const deleteJob = async (jobId) => {
+  await fetch(`${host}/jobs/${jobId}`, { method: "DELETE" });
+  setJobs(jobs.filter(job => job.id !== jobId));
+};
 
   const viewJobDetails = (job) => {
     setSelectedJob(job);
@@ -50,14 +54,17 @@ const App = () => {
     setSelectedJob(null);
   };
 
-  const saveEdit = (updatedJob) => {
-    setJobs((prevJobs) =>
-      prevJobs.map((job) =>
-        job.id === updatedJob.id ? { ...job, ...updatedJob } : job
-      )
-    );
-    setSelectedJob(updatedJob);
-  };
+  const saveEdit = async (updatedJob) => {
+    const response = await fetch(`${host}/jobs/${updatedJob.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedJob),
+    });
+    const editedJob = await response.json();
+    setJobs(jobs.map(job => job.id === editedJob.id ? editedJob : job));
+    setEditingJob(null);
+};
+
 
   return (
     <div className="min-h-screen flex flex-col items-center p-4 bg-gray-100 text-black dark:bg-gray-900 dark:text-white">
