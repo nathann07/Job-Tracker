@@ -6,6 +6,7 @@ import FilterBar from "./components/FilterBar";
 import JobDetails from "./components/JobDetails"; // Updated reference
 import HoverButton from "./components/HoverButton";
 import StatsPanel from "./components/StatsPanel";
+import { supabase } from "./supabaseClient";
 
 const App = () => {
   const [jobs, setJobs] = useState([]);
@@ -15,36 +16,65 @@ const App = () => {
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("darkMode") === "true");
   const [statsOpen, setStatsOpen] = useState(false);
 
-  const toggleStatsPanel = () => setStatsOpen(!statsOpen);
-
-  const API_BASE_URL = "https://job-tracker-8naf.onrender.com";
-
+  // fetch jobs
   useEffect(() => {
-    fetch(`${API_BASE_URL}/jobs`)
-        .then((res) => res.json())
-        .then((data) => setJobs(data))
-        .catch((err) => console.error("Error fetching jobs:", err));
-}, []);
+    const fetchJobs = async () => {
+      const { data, error } = await supabase
+        .from('jobs')
+        .select('*')
+        .order('created_at', { ascending: false }); // same sort as "newest first"
 
+      if (error) {
+        console.error("Error fetching jobs from Supabase:", error.message);
+      } else {
+        setJobs(data);
+      }
+    };
+
+    fetchJobs();
+  }, []);
+
+  // dark mode
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
     localStorage.setItem("darkMode", darkMode ? "true" : "false");
   }, [darkMode]);
 
+  // add job
   const addJob = async (job) => {
-    const response = await fetch(`${API_BASE_URL}/jobs`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(job),
-    });
-    const newJob = await response.json();
-    setJobs([...jobs, newJob]);
-};
+    const { data, error } = await supabase
+      .from('jobs')
+      .insert([{
+        company: job.company,
+        role: job.role,
+        status: job.status
+      }])
+      .select(); // returns the newly added job(s)
 
-const deleteJob = async (jobId) => {
-  await fetch(`${API_BASE_URL}/jobs/${jobId}`, { method: "DELETE" });
-  setJobs(jobs.filter(job => job.id !== jobId));
-};
+    if (error) {
+      console.error("Error adding job:", error.message);
+      return;
+    }
+
+    setJobs([...jobs, ...data]); // use spread in case Supabase returns an array
+  };
+
+
+  // delete job
+  const deleteJob = async (jobId) => {
+    const { error } = await supabase
+      .from('jobs')
+      .delete()
+      .eq('id', jobId);
+  
+    if (error) {
+      console.error("Error deleting job:", error.message);
+      return;
+    }
+  
+    setJobs(jobs.filter(job => job.id !== jobId));
+  };
+  
 
   const viewJobDetails = (job) => {
     setSelectedJob(job);
@@ -54,21 +84,33 @@ const deleteJob = async (jobId) => {
     setSelectedJob(null);
   };
 
-const saveEdit = async (updatedJob) => {
-    const response = await fetch(`${API_BASE_URL}/jobs/${updatedJob.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedJob),
-    });
-    const editedJob = await response.json();
-
-    setJobs(jobs.map(job => job.id === editedJob.id ? editedJob : job));
-
-    if (selectedJob && selectedJob.id === editedJob.id) {
-        setSelectedJob(editedJob);
+  // update job
+  const saveEdit = async (updatedJob) => {
+    const { data, error } = await supabase
+      .from('jobs')
+      .update({
+        company: updatedJob.company,
+        role: updatedJob.role,
+        status: updatedJob.status
+      })
+      .eq('id', updatedJob.id)
+      .select();
+  
+    if (error) {
+      console.error("Error updating job:", error.message);
+      return;
     }
-};
 
+    const updated = data[0];
+  
+    setJobs(jobs.map(job => job.id === updatedJob.id ? updated : job));
+
+    setSelectedJob(updated);
+  };
+
+  const toggleStatsPanel = () => setStatsOpen(!statsOpen);
+  
+    
 
 
   return (
