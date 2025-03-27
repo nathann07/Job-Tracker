@@ -20,6 +20,8 @@ const FilterBar = ({ filter, setFilter, sortOrder, setSortOrder }) => {
       >
         <option value="newest">Newest First</option>
         <option value="oldest">Oldest First</option>
+        <option value="company">Company</option>
+        <option value="role">Role</option>
       </select>
     </div>
   );

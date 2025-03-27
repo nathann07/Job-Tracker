@@ -80,7 +80,7 @@ const JobDetails = ({ job, closeJobDetails, saveEdit }) => {
           <p>{`Description (Optional)`}</p>
           <textarea
             className="border p-2 w-full mb-2 bg-white dark:bg-gray-700 dark:text-white"
-            value={updatedJob.description}
+            value={updatedJob.description || ""}
             onChange={(e) => setUpdatedJob({ ...updatedJob, description: e.target.value })}
             placeholder="Job Description (Optional)"
           ></textarea>
@@ -88,7 +88,7 @@ const JobDetails = ({ job, closeJobDetails, saveEdit }) => {
           <input
             type="url"
             className="border p-2 w-full mb-2 bg-white dark:bg-gray-700 dark:text-white"
-            value={updatedJob.postingLink}
+            value={updatedJob.posting_link || ""}
             onChange={(e) => setUpdatedJob({ ...updatedJob, postingLink: e.target.value })}
             placeholder="Job Posting URL (Optional)"
           />
@@ -96,11 +96,11 @@ const JobDetails = ({ job, closeJobDetails, saveEdit }) => {
           <input
             type="url"
             className="border p-2 w-full mb-2 bg-white dark:bg-gray-700 dark:text-white"
-            value={updatedJob.screenshotUrl}
+            value={updatedJob.resume_url || ""}
             onChange={(e) => setUpdatedJob({ ...updatedJob, screenshotUrl: e.target.value })}
             placeholder="Job Posting Screenshot URL (Optional)"
           />
-          <button type="submit" className="bg-blue-500 text-white p-2 w-full rounded mt-2">
+          <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white p-2 w-full rounded mt-2">
             Save Changes
           </button>
         </form>

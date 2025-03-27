@@ -6,7 +6,18 @@ import HoverButton from "./HoverButton";
 const JobList = ({ jobs, deleteJob, viewJobDetails, filter, sortOrder }) => {
 
   const filteredJobs = filter === "All" ? jobs : jobs.filter(job => job.status === filter);
-  const sortedJobs = [...filteredJobs].sort((a, b) => sortOrder === "newest" ? b.id - a.id : a.id - b.id);
+  const sortedJobs = [...filteredJobs].sort((a, b) =>
+    sortOrder === "newest"
+      ? new Date(b.created_at) - new Date(a.created_at)
+      : sortOrder === "oldest"
+      ? new Date(a.created_at) - new Date(b.created_at)
+      : sortOrder === "company"
+      ? a.company.toLowerCase().localeCompare(b.company.toLowerCase())
+      : sortOrder === "role"
+      ? a.role.toLowerCase().localeCompare(b.role.toLowerCase())
+      : 0
+  );
+  
 
   return (
     <div className="mt-4 space-y-3">
