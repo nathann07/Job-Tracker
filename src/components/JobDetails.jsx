@@ -88,7 +88,7 @@ const JobDetails = ({ job, closeJobDetails, saveEdit }) => {
           <input
             type="url"
             className="border p-2 w-full mb-2 bg-white dark:bg-gray-700 dark:text-white"
-            value={updatedJob.posting_link || ""}
+            value={updatedJob.postingLink || ""}
             onChange={(e) => setUpdatedJob({ ...updatedJob, postingLink: e.target.value })}
             placeholder="Job Posting URL (Optional)"
           />
@@ -96,7 +96,7 @@ const JobDetails = ({ job, closeJobDetails, saveEdit }) => {
           <input
             type="url"
             className="border p-2 w-full mb-2 bg-white dark:bg-gray-700 dark:text-white"
-            value={updatedJob.resume_url || ""}
+            value={updatedJob.screenshotUrl || ""}
             onChange={(e) => setUpdatedJob({ ...updatedJob, screenshotUrl: e.target.value })}
             placeholder="Job Posting Screenshot URL (Optional)"
           />

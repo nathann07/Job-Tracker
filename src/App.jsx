@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
+import { supabase } from "./supabaseClient";
+import { toCamel, fromCamel } from "./utils/fieldMap";
+import { cleanField, getSortedJobs, getFilteredAndSortedJobs } from "./utils/jobHelpers";
 import Header from "./components/Header";
 import JobForm from "./components/JobForm";
 import JobList from "./components/JobList";
 import FilterBar from "./components/FilterBar";
-import JobDetails from "./components/JobDetails"; // Updated reference
+import JobDetails from "./components/JobDetails";
 import HoverButton from "./components/HoverButton";
 import StatsPanel from "./components/StatsPanel";
 import AuthForm from "./components/AuthForm";
-import { supabase } from "./supabaseClient";
 
 const App = () => {
   const [loadingUser, setLoadingUser] = useState(true);
@@ -15,7 +17,7 @@ const App = () => {
   const [jobs, setJobs] = useState([]);
   const [filter, setFilter] = useState("All");
   const [sortOrder, setSortOrder] = useState("newest");
-  const [selectedJob, setSelectedJob] = useState(null); // Handles viewing details
+  const [selectedJob, setSelectedJob] = useState(null); // handles viewing details
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("darkMode") === "true");
   const [statsOpen, setStatsOpen] = useState(false);
 
@@ -33,7 +35,6 @@ const App = () => {
     return () => listener?.subscription.unsubscribe();
   }, []);
 
-
   // fetch jobs
   useEffect(() => {
     const fetchJobs = async () => {
@@ -48,7 +49,7 @@ const App = () => {
       if (error) {
         console.error("Error fetching jobs from Supabase:", error.message);
       } else {
-        setJobs(data);
+        setJobs(data.map(toCamel));  // change job field names to camelCase
       }
     };
 
@@ -61,34 +62,54 @@ const App = () => {
     localStorage.setItem("darkMode", darkMode ? "true" : "false");
   }, [darkMode]);
 
-  // clean field function
-  const cleanField = (value) => (value?.trim() === "" ? null : value);
-
   // add job
   const addJob = async (job) => {
+    const camelJob = {
+      ...job,
+      postingLink: cleanField(job.postingLink),
+      screenshotUrl: cleanField(job.screenshotUrl),
+      description: cleanField(job.description),
+      userId: user.id,
+    };
+
     const { data, error } = await supabase
       .from('jobs')
-      .insert([{
-        company: job.company,
-        role: job.role,
-        status: job.status,
-        description: cleanField(job.description),
-        posting_link: cleanField(job.postingLink),
-        resume_url: cleanField(job.screenshotUrl),
-        user_id: user.id,
-      }])
-      .select(); // returns the newly added job
+      .insert([fromCamel(camelJob)])
+      .select();
 
     if (error) {
       console.error("Error adding job:", error.message);
       return;
     }
 
-    setJobs([...jobs, ...data]); // use spread in case Supabase returns an array
+    const newJob = toCamel(data[0]);
+    setJobs(getSortedJobs([...jobs, newJob], sortOrder));
   };
 
   // delete job
   const deleteJob = async (jobId) => {
+    // find the job first to get screenshot URL
+    const jobToDelete = jobs.find(job => job.id === jobId);
+
+    // if screenshot exists, attempt to delete it from Supabase Storage
+    if (jobToDelete?.screenshotUrl) {
+      try {
+        const url = new URL(jobToDelete.screenshotUrl);
+        const pathParts = url.pathname.split("/");
+        const fileName = pathParts[pathParts.length - 1]; // get file name from the URL path
+
+        const { error: storageError } = await supabase.storage
+          .from("screenshots")
+          .remove([fileName]);
+
+        if (storageError) {
+          console.warn("Failed to delete screenshot:", storageError.message);
+        }
+      } catch (err) {
+        console.error("Error parsing screenshot URL:", err);
+      }
+    }
+
     const { error } = await supabase
       .from('jobs')
       .delete()
@@ -112,16 +133,18 @@ const App = () => {
 
   // update job
   const saveEdit = async (updatedJob) => {
+    // clean job fields
+    const camelJob = {
+      ...updatedJob,
+      postingLink: cleanField(updatedJob.postingLink),
+      screenshotUrl: cleanField(updatedJob.screenshotUrl),
+      description: cleanField(updatedJob.description),
+    };
+
+    // update job in supabase
     const { data, error } = await supabase
       .from('jobs')
-      .update({
-        company: updatedJob.company,
-        role: updatedJob.role,
-        status: updatedJob.status,
-        description: cleanField(updatedJob.description),
-        posting_link: cleanField(updatedJob.postingLink),
-        resume_url: cleanField(updatedJob.screenshotUrl),
-      })
+      .update(fromCamel(camelJob))
       .eq('id', updatedJob.id)
       .select();
 
@@ -130,16 +153,23 @@ const App = () => {
       return;
     }
 
-    const updated = data[0];
+    // get updated job
+    const updated = toCamel(data[0]);
 
+    // update job list with updated job
     setJobs(jobs.map(job => job.id === updatedJob.id ? updated : job));
 
     setSelectedJob(updated);
   };
 
+
   const toggleStatsPanel = () => setStatsOpen(!statsOpen);
 
-  if (loadingUser) return <p className="text-center mt-10">Loading...</p>;
+  if (loadingUser) return (
+    <div className="min-h-screen flex flex-col items-center p-4 bg-gray-100 text-black dark:bg-gray-900 dark:text-white">
+      <p className="text-center mt-10">Loading...</p>
+    </div>
+  );
   if (!user) return <AuthForm setUser={setUser} />;
   return (
     <div className="min-h-screen flex flex-col items-center p-4 bg-gray-100 text-black dark:bg-gray-900 dark:text-white">
@@ -176,7 +206,11 @@ const App = () => {
           <>
             <FilterBar filter={filter} setFilter={setFilter} sortOrder={sortOrder} setSortOrder={setSortOrder} />
             <JobForm addJob={addJob} />
-            <JobList jobs={jobs} deleteJob={deleteJob} viewJobDetails={viewJobDetails} filter={filter} sortOrder={sortOrder} />
+            <JobList
+              jobs={getFilteredAndSortedJobs(jobs, filter, sortOrder)}
+              deleteJob={deleteJob}
+              viewJobDetails={viewJobDetails}
+            />
           </>
         )}
       </div>

@@ -3,30 +3,17 @@ import { motion } from "framer-motion";
 import { TiDelete } from "react-icons/ti";
 import HoverButton from "./HoverButton";
 
-const JobList = ({ jobs, deleteJob, viewJobDetails, filter, sortOrder }) => {
-
-  const filteredJobs = filter === "All" ? jobs : jobs.filter(job => job.status === filter);
-  const sortedJobs = [...filteredJobs].sort((a, b) =>
-    sortOrder === "newest"
-      ? new Date(b.created_at) - new Date(a.created_at)
-      : sortOrder === "oldest"
-      ? new Date(a.created_at) - new Date(b.created_at)
-      : sortOrder === "company"
-      ? a.company.toLowerCase().localeCompare(b.company.toLowerCase())
-      : sortOrder === "role"
-      ? a.role.toLowerCase().localeCompare(b.role.toLowerCase())
-      : 0
-  );
-  
+const JobList = ({ jobs, deleteJob, viewJobDetails }) => {
 
   return (
     <div className="mt-4 space-y-3">
-      {sortedJobs.length === 0 ? (
+      {jobs.length === 0 ? (
         <p className="text-gray-500 dark:text-gray-400 text-center">No jobs found.</p>
       ) : (
-        sortedJobs.map((job) => (
+        jobs.map((job) => (
           <motion.div
             key={job.id}
+            layout
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}

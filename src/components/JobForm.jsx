@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "../supabaseClient";
 
 const JobForm = ({ addJob }) => {
   const [job, setJob] = useState({
@@ -9,11 +10,38 @@ const JobForm = ({ addJob }) => {
     postingLink: "",
     screenshotUrl: "",
   });
+  const [screenshotFile, setScreenshotFile] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    addJob(job);
+  
+    let screenshotUrl = "";
+  
+    if (screenshotFile) {
+      const fileExt = screenshotFile.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+  
+      const { data, error } = await supabase.storage
+        .from("screenshots")
+        .upload(filePath, screenshotFile);
+  
+      if (error) {
+        console.error("Error uploading screenshot:", error.message);
+      } else {
+        const { data: publicUrlData } = supabase.storage
+          .from("screenshots")
+          .getPublicUrl(filePath);
+  
+        screenshotUrl = publicUrlData.publicUrl;
+      }
+    }
+  
+    addJob({ ...job, screenshotUrl });
+  
+    // reset form
     setJob({ company: "", role: "", status: "Applied", description: "", postingLink: "", screenshotUrl: "" });
+    setScreenshotFile(null);
   };
 
   return (
@@ -63,13 +91,12 @@ const JobForm = ({ addJob }) => {
           onChange={(e) => setJob({ ...job, postingLink: e.target.value })}
         />
 
-        {/* Screenshot URL */}
+        {/* Screenshot Upload */}
         <input
-          type="url"
-          placeholder="Job Posting Screenshot URL (Optional)"
-          className="border p-3 w-full mb-3 text-lg bg-white dark:bg-gray-600 dark:text-white"
-          value={job.screenshotUrl}
-          onChange={(e) => setJob({ ...job, screenshotUrl: e.target.value })}
+          type="file"
+          accept="image/*"
+          onChange={(e) => setScreenshotFile(e.target.files[0])}
+          className="border p-3 w-full mb-3 bg-white dark:bg-gray-600 dark:text-white"
         />
 
         <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded w-full text-lg">
