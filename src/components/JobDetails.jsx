@@ -1,14 +1,54 @@
 import { useState } from "react";
+import { supabase } from "../supabaseClient";
+import { deleteScreenshotFromSupabase } from "../utils/jobHelpers";
 import { motion } from "framer-motion";
 import { TiDelete } from "react-icons/ti";
 
 const JobDetails = ({ job, closeJobDetails, saveEdit }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [updatedJob, setUpdatedJob] = useState({ ...job });
+  const [screenshotFile, setScreenshotFile] = useState(null);
+  const [removeScreenshot, setRemoveScreenshot] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    saveEdit(updatedJob);
+
+    let updatedScreenshotUrl = updatedJob.screenshotUrl;
+
+    // remove existing screenshot (even if no new one is uploaded)
+    if (removeScreenshot && updatedScreenshotUrl) {
+      await deleteScreenshotFromSupabase(updatedScreenshotUrl);
+      updatedScreenshotUrl = null;
+    }
+
+    // upload new screenshot
+    if (screenshotFile) {
+      // if we're replacing, clean up the old one first
+      if (updatedScreenshotUrl) {
+        await deleteScreenshotFromSupabase(updatedScreenshotUrl);
+      }
+
+      const fileExt = screenshotFile.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("screenshots")
+        .upload(filePath, screenshotFile);
+
+      if (uploadError) {
+        console.error("Error uploading new screenshot:", uploadError.message);
+      } else {
+        const { data: publicUrlData } = supabase.storage
+          .from("screenshots")
+          .getPublicUrl(filePath);
+
+        updatedScreenshotUrl = publicUrlData.publicUrl;
+      }
+    }
+
+    // save updated job
+    saveEdit({ ...updatedJob, screenshotUrl: updatedScreenshotUrl });
     setIsEditing(false);
   };
 
@@ -33,6 +73,7 @@ const JobDetails = ({ job, closeJobDetails, saveEdit }) => {
             className="bg-gray-400 text-white px-3 rounded hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-500 min-w-[105px] h-7"
             onClick={() => {
               setUpdatedJob(job);
+              setRemoveScreenshot(false);
               setIsEditing(!isEditing);
             }}
           >
@@ -92,14 +133,24 @@ const JobDetails = ({ job, closeJobDetails, saveEdit }) => {
             onChange={(e) => setUpdatedJob({ ...updatedJob, postingLink: e.target.value })}
             placeholder="Job Posting URL (Optional)"
           />
-          <p>{`Posting Screenshot URL (Optional)`}</p>
+          <p>{`Replace Screenshot (Optional)`}</p>
           <input
-            type="url"
+            type="file"
+            accept="image/*"
             className="border p-2 w-full mb-2 bg-white dark:bg-gray-700 dark:text-white"
-            value={updatedJob.screenshotUrl || ""}
-            onChange={(e) => setUpdatedJob({ ...updatedJob, screenshotUrl: e.target.value })}
-            placeholder="Job Posting Screenshot URL (Optional)"
+            onChange={(e) => setScreenshotFile(e.target.files[0])}
           />
+          {updatedJob.screenshotUrl && (
+            <div className="flex items-center space-x-2 mb-2">
+              <input
+                type="checkbox"
+                id="removeScreenshot"
+                checked={removeScreenshot}
+                onChange={(e) => setRemoveScreenshot(e.target.checked)}
+              />
+              <label htmlFor="removeScreenshot" className="text-sm">Remove existing screenshot</label>
+            </div>
+          )}
           <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white p-2 w-full rounded mt-2">
             Save Changes
           </button>

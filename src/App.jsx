@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "./supabaseClient";
 import { toCamel, fromCamel } from "./utils/fieldMap";
-import { cleanField, getSortedJobs, getFilteredAndSortedJobs } from "./utils/jobHelpers";
+import { deleteScreenshotFromSupabase, cleanField, getSortedJobs, getFilteredAndSortedJobs } from "./utils/jobHelpers";
 import Header from "./components/Header";
 import JobForm from "./components/JobForm";
 import JobList from "./components/JobList";
@@ -93,23 +93,10 @@ const App = () => {
 
     // if screenshot exists, attempt to delete it from Supabase Storage
     if (jobToDelete?.screenshotUrl) {
-      try {
-        const url = new URL(jobToDelete.screenshotUrl);
-        const pathParts = url.pathname.split("/");
-        const fileName = pathParts[pathParts.length - 1]; // get file name from the URL path
-
-        const { error: storageError } = await supabase.storage
-          .from("screenshots")
-          .remove([fileName]);
-
-        if (storageError) {
-          console.warn("Failed to delete screenshot:", storageError.message);
-        }
-      } catch (err) {
-        console.error("Error parsing screenshot URL:", err);
-      }
+      await deleteScreenshotFromSupabase(jobToDelete.screenshotUrl);
     }
 
+    // attempt to delete job
     const { error } = await supabase
       .from('jobs')
       .delete()

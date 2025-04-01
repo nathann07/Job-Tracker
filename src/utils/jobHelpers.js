@@ -1,3 +1,5 @@
+import { supabase } from "../supabaseClient";
+
 // clean job fields
 export const cleanField = (value) => (value?.trim() === "" ? null : value);
 
@@ -17,8 +19,27 @@ export const getSortedJobs = (jobList, sortOrder) => {
   });
 };
 
-// filter
+// filter jobs
 export const getFilteredAndSortedJobs = (jobs, filter, sortOrder) => {
   const filtered = filter === "All" ? jobs : jobs.filter(job => job.status === filter);
   return getSortedJobs(filtered, sortOrder);
+};
+
+// delete screenshot from supabase (after deleting or editing job)
+export const deleteScreenshotFromSupabase = async (screenshotUrl) => {
+  try {
+    const url = new URL(screenshotUrl);
+    const pathParts = url.pathname.split("/");
+    const fileName = pathParts[pathParts.length - 1];
+
+    const { error: storageError } = await supabase.storage
+      .from("screenshots")
+      .remove([fileName]);
+
+    if (storageError) {
+      console.warn("Failed to delete screenshot:", storageError.message);
+    }
+  } catch (err) {
+    console.error("Error parsing screenshot URL:", err);
+  }
 };
