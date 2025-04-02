@@ -1,31 +1,54 @@
 # Job Tracker App
-A React.js-based web application designed to help users organize and track job applications efficiently. It offers features like filtering, sorting, editing, and a statistics overview to provide valuable insights into the job search process.
+A React.js-based job application tracker to help users organize and manage their job search efficiently. Users can add, edit, filter, and sort job applications, view statistics, upload screenshots, and more — all with a responsive and modern UI.
 
 ## Try It Here
 
 Check out the live application: https://myjobtracker.netlify.app/
+## Highlights
+* Built with **React** + **Tailwind CSS**
+* Mobile-friendly design with smooth animations
+* Integrated with **Supabase** for user authentication, database, and screenshot file storage
+* Secure login and password reset flow with email confirmation
 
 ## Features
 
+* User Authentication
+  * Sign up, log in, and log out securely using Supabase Auth
+  * Email confirmation on sign up
+  * Each user's data is private and scoped to their account only
+* Password Reset Workflow
+  * Users can request a reset email and set a new password through a dedicated route
 * Add & Manage Job Applications
-* Filter by Status & Sort by Date
-* Edit & Update Job Entries
-* Dark Mode & Responsive UI
-* Collapsible Statistics Panel for Job Insights
+  * Add jobs with fields for company, role, status, optional description, posting URL, and screenshot
+* Edit & Update Jobs
+  * Modify job details and replace or remove screenshots at any time
+* Delete Job Applications
+  * Easily remove entries, including screenshots stored in Supabase
+* Filter by Status & Sort Applications
+  * Filter by: Applied, Interview, Offer, Rejected, or All
+  * Sort by: Newest First, Oldest First, Company, or Role
+* Job Statistics Panel
+  * Toggleable side panel that displays counts of each job status and total applications
+* Screenshot Upload Support
+  * Upload an image of the job posting for future reference
+* Dark Mode Support
+  * Toggle between light and dark themes, with local storage persistence
+* Framer Motion Animations
+  * Smooth UI transitions and interactive button effects
 
 ## Technologies Used
 
 * React.js
 * Tailwind CSS
 * Framer Motion
+* Supabase (Auth, Database, Storage)
 * Vite
-* Express Backend for Data Persistence
 
-## Installation and Setup
+## Installation & Setup
 
 1. Clone the repository:
 ```
-git clone https://github.com/yourusername/job-tracker-app.git
+git clone https://github.com/nathann07/Job-Tracker.git
 ```
 
 2. Navigate to the project directory:
@@ -38,7 +61,7 @@ cd job-tracker-app
 npm install
 ```
 
-4. Start the development server:
+4. Start the local dev server:
 ```
 npm run dev
 ```
@@ -50,17 +73,19 @@ http://localhost:5173
 
 ## Usage
 
-* Add a Job: Fill in the job details in the "Add Job" form and click "Add Job."
-* Filter Jobs: Use the filter options to view jobs by status.
-* Sort Jobs: Select the desired sorting order (newest or oldest) from the dropdown.
-* Edit a Job: Click the "Edit" button next to a job entry, update the details, and save.
-* Delete a Job: Click the "Delete" icon next to a job entry to remove it.
-* View Statistics: Click the "📊 View Stats" button to open the statistics panel.
-* Currently, **JOBS ARE SHARED WITH EVERYONE**. Separate user accounts are the next planned feature.
+* Log In / Sign Up: Create or access your account
+* Add a Job: Fill out the form and click “Add Job”
+* Filter / Sort: Use dropdowns to filter and sort applications
+* View Details: Click the status button of a job to see full details and screenshot
+* Edit Job: While viewing job details, click "Edit" to update info
+* Delete Job: Click the “X” icon to remove an entry
+* View Stats: Click the “📊 View Stats” button to open the statistics panel
+* Toggle Theme: Use the light/dark mode switch
+* Log Out: Safely log out with a single click
 
-## Acknowledgments
+## Credits & Acknowledgments
 
-* [React Icons](https://react-icons.github.io/react-icons/) for the icons used in the project.
-* [Vite](https://vitejs.dev/) for the build tool.
-* [Netlify](https://www.netlify.com/) for hosting the live application.
-* [Render](https://render.com/) for hosting the Express backend.
+* [React Icons](https://react-icons.github.io/react-icons/)
+* [Vite](https://vitejs.dev/)
+* [Netlify](https://www.netlify.com/) for frontend hosting
+* [Supabase](https://supabase.com/) for backend, authentication, and file storage
